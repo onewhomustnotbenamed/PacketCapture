@@ -1,8 +1,19 @@
 #include "stdlib.h"
 #include "PcapLiveDeviceList.h"
 #include "PlatformSpecificUtils.h"
-#include<iostream>
-#include<string.h>
+#include <iostream>
+#include <iomanip>
+#include <cstring>
+
+using std::cout;
+using std::endl;
+using std::hex;
+using std::setfill;
+using std::setw;
+
+using u64 = unsigned long long;
+
+
 		
 struct B{
     int a[2];
@@ -21,6 +32,7 @@ struct PacketStats{
     std::cout << iface.b << std::endl;
     std::cout << iface.c[0] <<std::endl;
     std::cout << iface.c[1] <<std::endl;
+    std::cout<<std::endl;
 	}	
 	
 };
@@ -37,23 +49,37 @@ static void onPacketArrives(pcpp::RawPacket* packet, pcpp::PcapLiveDevice* dev, 
 
 
 	for (pcpp::Layer* curLayer = parsedPacket.getFirstLayer(); curLayer->getNextLayer()!= NULL; curLayer = curLayer->getNextLayer())
-{
-	temp=curLayer->getLayerPayload(); 
-}	
+	{
+		temp=curLayer->getLayerPayload(); 
+	}	
+	
 	A=temp;
    	B interface;
-   
-    std::cout<<&A<<std::endl;
-    memcpy(&interface, A, sizeof(interface));
+   	memcpy(&interface, A, sizeof(interface));
     stats->printStruct(interface);	
+
+    /*
+   	cout<<"The data is:";
+   	//HEX
+   	cout << hex << setfill('0');  
+    auto *ptr = reinterpret_cast<unsigned char *>(temp);
+    for (int i = 0; i < sizeof(parsedPacket); i++, ptr++) {
+        if (i % sizeof(u64) == 0) {
+            cout << endl;
+        }
+        cout << setw(2) << static_cast<unsigned>(*ptr) << " ";
+    }
+
+    */
+    cout<<endl<<"-------------------------------------------------------"<<endl;
+   
+      
 }
 
 
 
 
-/**
-* main method of the application
-*/
+//MAIN
 int main(int argc, char* argv[])
 
 {
@@ -70,7 +96,7 @@ int main(int argc, char* argv[])
 		exit(1);
 	}
 
-	// open the device before start capturing/sending packets
+	
 	if (!dev->open())
 	{
 		printf("Cannot open device\n");
@@ -79,14 +105,15 @@ int main(int argc, char* argv[])
 
 printf("\nStarting async capture...\n");
 
-// start capture in async mode. Give a callback function to call to whenever a packet is captured and the stats object as the cookie
-dev->startCapture(onPacketArrives, &stats);
-PCAP_SLEEP(1);
 
-// stop capturing packets
+dev->startCapture(onPacketArrives, &stats);
+PCAP_SLEEP(30);
+
+
 dev->stopCapture();
-// print results
+
 
 
 
 }
+
