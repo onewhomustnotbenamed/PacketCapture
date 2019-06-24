@@ -1,0 +1,9 @@
+<packet>
+	<value type="int"/>
+	<value type="int"/>
+	<value type="float"/>
+	<value type="float"/>
+	<value type="float"/>
+	<value type="int"/>
+	<value type="int"/>
+</packet>
